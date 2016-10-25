@@ -1,0 +1,52 @@
+---
+# core configs
+ffmpeg_source_dir: "/opt/ffmpeg/src"
+ffmpeg_build_dir: "/opt/ffmpeg/ffmpeg_build"
+ffmpeg_bin_dir: "/opt/ffmpeg/bin"
+ffmpeg_repo: git://source.ffmpeg.org/ffmpeg.git
+ffmpeg_repo_dir: ffmpeg
+ffmpeg_version: HEAD
+ffmpeg_config_opt: ""
+
+# library configs
+ffmpeg_yasm_repo: git://github.com/yasm/yasm.git
+ffmpeg_yasm_repo_dir: yasm
+ffmpeg_yasm_version: HEAD
+
+ffmpeg_libfdkaac_enable: true
+ffmpeg_libfdkaac_repo: git://github.com/mstorsjo/fdk-aac.git
+ffmpeg_libfdkaac_repo_dir: libfdkaac
+ffmpeg_libfdkaac_version: HEAD
+
+ffmpeg_libvpx_enable: true
+ffmpeg_libvpx_repo: https://chromium.googlesource.com/webm/libvpx.git
+ffmpeg_libvpx_repo_dir: libvpx
+ffmpeg_libvpx_version: HEAD
+
+ffmpeg_opus_enable: true
+ffmpeg_opus_repo: https://github.com/xiph/opus.git
+ffmpeg_opus_repo_dir: opus
+ffmpeg_opus_version: HEAD
+
+ffmpeg_speex_enable: true
+ffmpeg_speex_repo: https://github.com/xiph/speex.git
+ffmpeg_speex_repo_dir: speex
+ffmpeg_speex_version: HEAD
+
+ffmpeg_x264_enable: true
+ffmpeg_x264_repo: git://git.videolan.org/x264.git
+ffmpeg_x264_repo_dir: x264
+ffmpeg_x264_version: HEAD
+ffmpeg_x264_config_opt: ""
+
+ffmpeg_x265_enable: true
+ffmpeg_x265_repo: https://bitbucket.org/multicoreware/x265
+ffmpeg_x265_repo_dir: x265
+ffmpeg_x265_version: tip
+
+ffmpeg_h264_omx_enable: false
+ffmpeg_h264_qsv_enable: false
+ffmpeg_h264_nvenc_enable: false
+
+# Enable NEON optimisation in ffmpeg for ARM
+ffmpeg_neon_enable: false

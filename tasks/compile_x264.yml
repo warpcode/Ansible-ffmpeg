@@ -1,0 +1,30 @@
+---
+- name: Compile x264 (configure)
+  command: >
+        ./configure
+        {{ ffmpeg_x264_config_opt }}
+        --prefix="{{ ffmpeg_build_dir }}"
+        --bindir="{{ ffmpeg_bin_dir }}"
+        --enable-static
+        --disable-opencl
+  environment:
+      PATH: "{{ ffmpeg_bin_dir }}:{{ ansible_env.PATH }}"
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_x264_repo_dir }}"
+
+- name: Compile x264 (make)
+  command: make
+  environment:
+      PATH: "{{ ffmpeg_bin_dir }}:{{ ansible_env.PATH }}"
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_x264_repo_dir }}"
+
+- name: Compile x264 (make install)
+  command: make install
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_x264_repo_dir }}"
+
+- name: Compile x264 (make distclean)
+  command: make distclean
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_x264_repo_dir }}"

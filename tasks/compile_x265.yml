@@ -1,0 +1,24 @@
+---
+- name: Compile x265 (cmake)
+  command: cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="{{ ffmpeg_build_dir }}" -DENABLE_SHARED:bool=off ../../source
+  environment:
+      PATH: "{{ ffmpeg_bin_dir }}:{{ ansible_env.PATH }}"
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_x265_repo_dir }}/build/linux"
+
+- name: Compile x265 (make)
+  command: make
+  environment:
+      PATH: "{{ ffmpeg_bin_dir }}:{{ ansible_env.PATH }}"
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_x265_repo_dir }}/build/linux"
+
+- name: Compile x265 (make install)
+  command: make install
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_x265_repo_dir }}/build/linux"
+
+- name: Compile x265 (make clean)
+  command: make clean
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_x265_repo_dir }}/build/linux"

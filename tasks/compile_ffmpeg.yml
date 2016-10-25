@@ -1,0 +1,50 @@
+---
+- name: Compile FFmpeg (configure)
+  command: >
+    ./configure
+    {{ ffmpeg_config_opt }}
+    --prefix="{{ ffmpeg_build_dir }}"
+    --extra-cflags="-I{{ ffmpeg_build_dir }}/include"
+    --extra-ldflags="-L{{ ffmpeg_build_dir }}/lib"
+    --bindir="{{ ffmpeg_bin_dir }}"
+    --extra-libs=-ldl
+    --enable-gpl
+    --enable-nonfree
+    --enable-libass
+    {{ ffmpeg_libfdkaac_enable | ternary("--enable-libfdk-aac", "") }}
+    {{ ffmpeg_libvpx_enable | ternary("--enable-libvpx", "") }}
+    {{ ffmpeg_opus_enable | ternary("--enable-libopus", "") }}
+    {{ ffmpeg_speex_enable | ternary("--enable-libspeex", "") }}
+    {{ ffmpeg_x264_enable | ternary("--enable-libx264", "") }}
+    {{ ffmpeg_x265_enable | ternary("--enable-libx265", "") }}
+    {{ ffmpeg_h264_omx_enable | ternary("--enable-omx-rpi --enable-mmal --enable-hwaccel=h264_mmal", "") }}
+    {{ ffmpeg_h264_qsv_enable | ternary("--enable-libmfx", "") }}
+    {{ ffmpeg_h264_nvenc_enable | ternary("--enable-nvenc", "") }}
+    {{ ffmpeg_neon_enable | ternary("--enable-neon", "") }}
+    --enable-libfreetype
+    --enable-libmp3lame
+    --enable-libtheora
+    --enable-libvorbis
+
+  environment:
+      PATH: "{{ ffmpeg_bin_dir }}:{{ ansible_env.PATH }}"
+      PKG_CONFIG_PATH: "{{ ffmpeg_build_dir }}/lib/pkgconfig"
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_repo_dir }}"
+
+- name: Compile FFmpeg (make)
+  command: make
+  environment:
+      PATH: "{{ ffmpeg_bin_dir }}:{{ ansible_env.PATH }}"
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_repo_dir }}"
+
+- name: Compile FFmpeg (make install)
+  command: make install
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_repo_dir }}"
+
+- name: Compile FFmpeg (make distclean)
+  command: make distclean
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_repo_dir }}"

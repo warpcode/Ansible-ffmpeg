@@ -1,0 +1,24 @@
+---
+- name: Compile libvpx (configure)
+  command: ./configure --prefix={{ ffmpeg_build_dir }} --enable-static --disable-shared --disable-examples --disable-unit-tests
+  environment:
+      PATH: "{{ ffmpeg_bin_dir }}:{{ ansible_env.PATH }}"
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_libvpx_repo_dir }}"
+
+- name: Compile libvpx (make)
+  command: make
+  environment:
+      PATH: "{{ ffmpeg_bin_dir }}:{{ ansible_env.PATH }}"
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_libvpx_repo_dir }}"
+
+- name: Compile libvpx (make install)
+  command: make install
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_libvpx_repo_dir }}"
+
+- name: Compile libvpx (make clean)
+  command: make clean
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_libvpx_repo_dir }}"

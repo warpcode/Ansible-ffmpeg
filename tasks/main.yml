@@ -1,0 +1,146 @@
+---
+- name: Create required directories
+  file: dest={{ item }} state=directory
+  with_items:
+    - "{{ ffmpeg_source_dir }}"
+    - "{{ ffmpeg_build_dir }}"
+    - "{{ ffmpeg_bin_dir }}"
+
+- name: Install Dependencies
+  action: package name={{ item }} state=present
+  with_items:
+    - git-core
+    - autoconf
+    - automake
+    - build-essential
+    - libass-dev
+    - libgpac-dev
+    - libsdl1.2-dev
+    - libtheora-dev
+    - libtool
+    - libva-dev
+    - libvdpau-dev
+    - libvorbis-dev
+    - libx11-dev
+    - libxext-dev
+    - libxfixes-dev
+    - pkg-config
+    - texi2html
+    - zlib1g-dev
+    - libmp3lame-dev
+    - cmake
+    - mercurial
+
+# Pull down the respositories
+- name: Clone latest libfdkaac
+  git: repo="{{ ffmpeg_libfdkaac_repo }}" accept_hostkey=true dest="{{ ffmpeg_source_dir }}/{{ ffmpeg_libfdkaac_repo_dir }}" version="{{ ffmpeg_libfdkaac_version }}"
+  register: ffmpeg_libfdkaac_git_status
+  when: ffmpeg_libfdkaac_enable
+
+- name: Clone latest libvpx
+  git: repo="{{ ffmpeg_libvpx_repo }}" accept_hostkey=true dest="{{ ffmpeg_source_dir }}/{{ ffmpeg_libvpx_repo_dir }}" version="{{ ffmpeg_libvpx_version }}"
+  register: ffmpeg_libvpx_git_status
+  when: ffmpeg_libvpx_enable
+
+- name: Clone latest opus
+  git: repo="{{ ffmpeg_opus_repo }}" accept_hostkey=true dest="{{ ffmpeg_source_dir }}/{{ ffmpeg_opus_repo_dir }}" version="{{ ffmpeg_opus_version }}"
+  register: ffmpeg_opus_git_status
+  when: ffmpeg_opus_enable
+
+- name: Clone latest speex
+  git: repo="{{ ffmpeg_speex_repo }}" accept_hostkey=true dest="{{ ffmpeg_source_dir }}/{{ ffmpeg_speex_repo_dir }}" version="{{ ffmpeg_speex_version }}"
+  register: ffmpeg_speex_git_status
+  when: ffmpeg_speex_enable
+
+- name: Clone latest x264
+  git: repo="{{ ffmpeg_x264_repo }}" accept_hostkey=true dest="{{ ffmpeg_source_dir }}/{{ ffmpeg_x264_repo_dir }}" version="{{ ffmpeg_x264_version }}"
+  register: ffmpeg_x264_git_status
+  when: ffmpeg_x264_enable
+
+- name: Clone latest x265
+  hg: repo="{{ ffmpeg_x265_repo }}" dest="{{ ffmpeg_source_dir }}/{{ ffmpeg_x265_repo_dir }}" version="{{ ffmpeg_x265_version }}"
+  register: ffmpeg_x265_git_status
+  when: ffmpeg_x265_enable
+
+- name: Clone latest yasm
+  git: repo="{{ ffmpeg_yasm_repo }}" accept_hostkey=true dest="{{ ffmpeg_source_dir }}/{{ ffmpeg_yasm_repo_dir }}" version="{{ ffmpeg_yasm_version }}"
+  register: ffmpeg_yasm_git_status
+
+- name: Clone latest FFmpeg
+  git: repo="{{ ffmpeg_repo }}" dest="{{ ffmpeg_source_dir }}/{{ ffmpeg_repo_dir }}" version="{{ ffmpeg_version }}"
+  register: ffmpeg_git_status
+
+# Scan for compiled packages
+- name: Checking Yasm
+  stat: path="{{ ffmpeg_bin_dir }}/yasm"
+  register: ffmpeg_yasm_compiled
+
+- name: Checking libfdkaac
+  stat: path="{{ ffmpeg_build_dir }}/lib/libfdk-aac.a"
+  register: ffmpeg_libfdkaac_compiled
+  when: ffmpeg_libfdkaac_enable
+
+- name: Checking libvpx
+  stat: path="{{ ffmpeg_build_dir }}/lib/libvpx.a"
+  register: ffmpeg_libvpx_compiled
+  when: ffmpeg_libvpx_enable
+
+- name: Checking opus
+  stat: path="{{ ffmpeg_build_dir }}/lib/libopus.a"
+  register: ffmpeg_opus_compiled
+  when: ffmpeg_opus_enable
+
+- name: Checking speex
+  stat: path="{{ ffmpeg_build_dir }}/lib/libspeex.a"
+  register: ffmpeg_speex_compiled
+  when: ffmpeg_speex_enable
+
+- name: Checking x264
+  stat: path="{{ ffmpeg_bin_dir }}/x264"
+  register: ffmpeg_x264_compiled
+  when: ffmpeg_x264_enable
+
+- name: Checking x265
+  stat: path="{{ ffmpeg_build_dir }}/lib/libx265.a"
+  register: ffmpeg_x265_compiled
+  when: ffmpeg_x265_enable
+
+- name: Checking ffmpeg
+  stat: path="{{ ffmpeg_bin_dir }}/ffmpeg"
+  register: ffmpeg_compiled
+
+# Set simplified facts for compile
+- name: Calculating which packages to compile
+  set_fact:
+     ffmpeg_libfdkaac_has_compiled: "{{ ffmpeg_libfdkaac_enable and (ffmpeg_libfdkaac_git_status.changed or not ffmpeg_libfdkaac_compiled.stat.exists) }}"
+     ffmpeg_libvpx_has_compiled: "{{ ffmpeg_libvpx_enable and (ffmpeg_libvpx_git_status.changed or not ffmpeg_libvpx_compiled.stat.exists) }}"
+     ffmpeg_opus_has_compiled: "{{ ffmpeg_opus_enable and (ffmpeg_opus_git_status.changed or not ffmpeg_opus_compiled.stat.exists) }}"
+     ffmpeg_speex_has_compiled: "{{ ffmpeg_speex_enable and (ffmpeg_speex_git_status.changed or not ffmpeg_speex_compiled.stat.exists) }}"
+     ffmpeg_x264_has_compiled: "{{ ffmpeg_x264_enable and (ffmpeg_x264_git_status.changed or not ffmpeg_x264_compiled.stat.exists) }}"
+     ffmpeg_x265_has_compiled: "{{ ffmpeg_x265_enable and (ffmpeg_x265_git_status.changed or not ffmpeg_x265_compiled.stat.exists) }}"
+
+# compile
+- include: compile_yasm.yml
+  when: ffmpeg_yasm_git_status.changed or not ffmpeg_yasm_compiled.stat.exists
+
+- include: compile_libfdkaac.yml
+  when: ffmpeg_libfdkaac_has_compiled
+
+- include: compile_libvpx.yml
+  when: ffmpeg_libvpx_has_compiled
+
+- include: compile_opus.yml
+  when: ffmpeg_opus_has_compiled
+
+- include: compile_speex.yml
+  when: ffmpeg_speex_has_compiled
+
+- include: compile_x264.yml
+  when: ffmpeg_x264_has_compiled
+
+- include: compile_x265.yml
+  when: ffmpeg_x265_has_compiled
+
+- include: compile_ffmpeg.yml
+  when: ffmpeg_git_status.changed or not ffmpeg_compiled.stat.exists or ffmpeg_libfdkaac_has_compiled or ffmpeg_libvpx_has_compiled or ffmpeg_opus_has_compiled or ffmpeg_speex_has_compiled or ffmpeg_x264_has_compiled or ffmpeg_x265_has_compiled
+

@@ -1,0 +1,25 @@
+---
+- name: Compile opus (autogen)
+  command: ./autogen.sh
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_opus_repo_dir }}"
+
+- name: Compile opus (configure)
+  command: ./configure --prefix={{ ffmpeg_build_dir }} --disable-shared
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_opus_repo_dir }}"
+
+- name: Compile opus (make)
+  command: make
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_opus_repo_dir }}"
+
+- name: Compile opus (make install)
+  command: make install
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_opus_repo_dir }}"
+
+- name: Compile opus (make distclean)
+  command: make distclean
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_opus_repo_dir }}"

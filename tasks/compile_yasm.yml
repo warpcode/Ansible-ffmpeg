@@ -1,0 +1,25 @@
+---
+- name: Compile yasm (autogen.sh)
+  command: ./autogen.sh
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_yasm_repo_dir }}"
+
+- name: Compile yasm (configure)
+  command: ./configure --prefix="{{ ffmpeg_build_dir }}" --bindir="{{ ffmpeg_bin_dir }}"
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_yasm_repo_dir }}"
+
+- name: Compile yasm (make)
+  command: make
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_yasm_repo_dir }}"
+
+- name: Compile yasm (make install)
+  command: make install
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_yasm_repo_dir }}"
+
+- name: Compile yasm (make distclean)
+  command: make distclean
+  args:
+      chdir: "{{ ffmpeg_source_dir }}/{{ ffmpeg_yasm_repo_dir }}"
