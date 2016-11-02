@@ -7,6 +7,7 @@
     --extra-cflags="-I{{ ffmpeg_build_dir }}/include"
     --extra-ldflags="-L{{ ffmpeg_build_dir }}/lib"
     --bindir="{{ ffmpeg_bin_dir }}"
+    --pkg-config-flags="--static"
     --extra-libs=-ldl
     --enable-gpl
     --enable-nonfree
