@@ -22,6 +22,7 @@
     {{ ffmpeg_h264_qsv_enable | ternary("--enable-libmfx", "") }}
     {{ ffmpeg_h264_nvenc_enable | ternary("--enable-nvenc", "") }}
     {{ ffmpeg_neon_enable | ternary("--enable-neon", "") }}
+    --enable-vaapi
     --enable-libfreetype
     --enable-libmp3lame
     --enable-libtheora
